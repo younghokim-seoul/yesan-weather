@@ -3,7 +3,10 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+
 }
+
+apply from: '../versioning.gradle'
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -24,27 +27,31 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.yesan.weather"
+    namespace = "com.smart.cctv"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.yesan.weather.yesan_weather"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        applicationId = "com.smart.cctv"
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
     }
 
     signingConfigs {
+        debug {
+            storeFile file("../keystore/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+
         release {
             storeFile file('../keystore/upload-keystore.jks')
             storePassword file('../keystore/keystore.password').text.trim()
@@ -54,8 +61,25 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            buildConfigField "String", "SERVER_V1", localProperties['url_default']
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".debug"
+        }
+        qa {
+            buildConfigField "String", "SERVER_V1", localProperties['url_ul']
             signingConfig signingConfigs.release
+            applicationIdSuffix ".qa"
+        }
+        release {
+            buildConfigField "String", "SERVER_V1", localProperties['url_ty']
+            signingConfig signingConfigs.release
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = getApkName(variant.buildType.name)
         }
     }
 }

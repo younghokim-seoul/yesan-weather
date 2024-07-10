@@ -8,7 +8,9 @@ import 'package:yesan_weather/main.dart';
 final yesanKeyProvider = Provider((ref) => GlobalKey());
 
 class YesanView extends ConsumerStatefulWidget {
-  const YesanView({super.key});
+  const YesanView({super.key, required this.baseUrl});
+
+  final String baseUrl;
 
   @override
   ConsumerState createState() => _YesanViewState();
@@ -34,14 +36,18 @@ class _YesanViewState extends ConsumerState<YesanView> {
   );
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    log.i("가즈아...");
     return Scaffold(
       body: SafeArea(
           child: PopScope(
         canPop: false,
         onPopInvoked: (didPop) async {
-          log.i("가즈아...");
           if (await _webViewController.canGoBack()) {
             await _webViewController.goBack();
           } else {
@@ -52,7 +58,7 @@ class _YesanViewState extends ConsumerState<YesanView> {
           children: [
             InAppWebView(
               key: ref.watch(yesanKeyProvider),
-              initialUrlRequest: URLRequest(url: WebUri("https://yesanweather.kr/")),
+              initialUrlRequest: URLRequest(url: WebUri(widget.baseUrl)),
               initialSettings: _options,
               onLoadStop: (InAppWebViewController controller, uri) {
                 log.i("onLoadStop $uri");
@@ -61,9 +67,14 @@ class _YesanViewState extends ConsumerState<YesanView> {
                 log.i("onLoadStart $uri");
               },
               shouldOverrideUrlLoading: (controller, navigationAction) async {
-                var uri = navigationAction.request.url!;
+                String requestUrl = navigationAction.request.url.toString();
 
-                log.i("shouldOverrideUrlLoading $uri");
+                log.i("shouldOverrideUrlLoading $requestUrl");
+
+                if (isAppLink(requestUrl)) {
+                  log.i("isAppLink $requestUrl");
+                  return NavigationActionPolicy.CANCEL;
+                }
 
                 return NavigationActionPolicy.ALLOW;
               },
@@ -71,13 +82,11 @@ class _YesanViewState extends ConsumerState<YesanView> {
                 _webViewController = controller;
               },
               onProgressChanged: (controller, progress) {
-
                 setState(() {
                   this.progress = progress / 100;
                 });
               },
             ),
-
             progress < 1.0
                 ? LinearProgressIndicator(value: progress)
                 : Container(),
@@ -86,4 +95,19 @@ class _YesanViewState extends ConsumerState<YesanView> {
       )),
     );
   }
+}
+
+bool isAppLink(String url) {
+  List<String> splitUrl = url.replaceFirst(RegExp(r'://'), ' ').split(' ');
+  String appScheme = splitUrl[0];
+
+  log.d("appScheme: $appScheme");
+
+  String? scheme;
+  try {
+    scheme = Uri.parse(url).scheme;
+  } catch (e) {
+    scheme = appScheme;
+  }
+  return !['http', 'https', 'about', 'data', ''].contains(scheme);
 }
