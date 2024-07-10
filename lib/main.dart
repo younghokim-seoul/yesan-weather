@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 
 import 'package:yaru/theme.dart';
-import 'package:yesan_weather/yesan_view.dart';
+import 'package:yesan_weather/smart_system_view.dart';
 
 final log = Logger(printer: PrettyPrinter(methodCount: 1));
 final materialAppNavigatorKeyProvider =
@@ -34,7 +34,7 @@ class StoreApp extends ConsumerWidget {
         theme: yaru.theme,
         darkTheme: yaru.darkTheme,
         home: ref.watch(getUrlProvider).maybeWhen(
-              data: (v) => YesanView(baseUrl: v),
+              data: (v) => SmartSystemView(baseUrl: v),
               orElse: () => const SizedBox.shrink(),
             ),
       );

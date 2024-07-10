@@ -5,18 +5,18 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yesan_weather/main.dart';
 
-final yesanKeyProvider = Provider((ref) => GlobalKey());
+final smartKeyProvider = Provider((ref) => GlobalKey());
 
-class YesanView extends ConsumerStatefulWidget {
-  const YesanView({super.key, required this.baseUrl});
+class SmartSystemView extends ConsumerStatefulWidget {
+  const SmartSystemView({super.key, required this.baseUrl});
 
   final String baseUrl;
 
   @override
-  ConsumerState createState() => _YesanViewState();
+  ConsumerState createState() => _SmartSystemViewState();
 }
 
-class _YesanViewState extends ConsumerState<YesanView> {
+class _SmartSystemViewState extends ConsumerState<SmartSystemView> {
   late InAppWebViewController _webViewController;
   double progress = 0;
   final InAppWebViewSettings _options = InAppWebViewSettings(
@@ -57,7 +57,7 @@ class _YesanViewState extends ConsumerState<YesanView> {
         child: Stack(
           children: [
             InAppWebView(
-              key: ref.watch(yesanKeyProvider),
+              key: ref.watch(smartKeyProvider),
               initialUrlRequest: URLRequest(url: WebUri(widget.baseUrl)),
               initialSettings: _options,
               onLoadStop: (InAppWebViewController controller, uri) {
