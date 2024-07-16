@@ -62,19 +62,26 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", "SERVER_V1", localProperties['url_default']
+            buildConfigField "String", "SERVER_URL", localProperties['url_default']
+            buildConfigField "String", "SERVER_CCTV", localProperties['cctv_default']
             signingConfig signingConfigs.debug
             applicationIdSuffix ".debug"
         }
-        qa {
-            buildConfigField "String", "SERVER_V1", localProperties['url_ul']
+
+        ul {
+            buildConfigField "String", "SERVER_URL", localProperties['url_ul']
+            buildConfigField "String", "SERVER_CCTV", localProperties['cctv_ul']
             signingConfig signingConfigs.release
-            applicationIdSuffix ".qa"
+            applicationIdSuffix ".ul"
         }
-        release {
-            buildConfigField "String", "SERVER_V1", localProperties['url_ty']
+
+        ty {
+            buildConfigField "String", "SERVER_URL", localProperties['url_ty']
+            buildConfigField "String", "SERVER_CCTV", localProperties['cctv_ty']
             signingConfig signingConfigs.release
+            applicationIdSuffix ".ty"
         }
+
     }
 
     applicationVariants.all { variant ->

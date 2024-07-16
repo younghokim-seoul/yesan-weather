@@ -9,8 +9,9 @@ import 'package:yesan_weather/smart_system_view.dart';
 final log = Logger(printer: PrettyPrinter(methodCount: 1));
 final materialAppNavigatorKeyProvider =
     Provider((ref) => GlobalKey<NavigatorState>());
-final getUrlProvider = FutureProvider<String>((ref) async {
-  return await channel.invokeMethod('getAppUrl');
+final getUrlProvider = FutureProvider<List<String>>((ref) async {
+  String data = await channel.invokeMethod('getAppUrl');
+  return data.split(",");
 });
 
 const channel = MethodChannel('com.smart.cctv');
@@ -34,7 +35,7 @@ class StoreApp extends ConsumerWidget {
         theme: yaru.theme,
         darkTheme: yaru.darkTheme,
         home: ref.watch(getUrlProvider).maybeWhen(
-              data: (v) => SmartSystemView(baseUrl: v),
+              data: (v) => SmartSystemView(schema: v),
               orElse: () => const SizedBox.shrink(),
             ),
       );

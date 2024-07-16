@@ -4,13 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yesan_weather/main.dart';
+import 'package:yesan_weather/rtsp_player.dart';
+import 'package:yesan_weather/utill/transition.dart';
 
 final smartKeyProvider = Provider((ref) => GlobalKey());
 
 class SmartSystemView extends ConsumerStatefulWidget {
-  const SmartSystemView({super.key, required this.baseUrl});
+  const SmartSystemView({super.key, required this.schema});
 
-  final String baseUrl;
+  final List<String> schema;
 
   @override
   ConsumerState createState() => _SmartSystemViewState();
@@ -58,7 +60,7 @@ class _SmartSystemViewState extends ConsumerState<SmartSystemView> {
           children: [
             InAppWebView(
               key: ref.watch(smartKeyProvider),
-              initialUrlRequest: URLRequest(url: WebUri(widget.baseUrl)),
+              initialUrlRequest: URLRequest(url: WebUri(widget.schema[0])),
               initialSettings: _options,
               onLoadStop: (InAppWebViewController controller, uri) {
                 log.i("onLoadStop $uri");
@@ -73,6 +75,13 @@ class _SmartSystemViewState extends ConsumerState<SmartSystemView> {
 
                 if (isAppLink(requestUrl)) {
                   log.i("isAppLink $requestUrl");
+                  Navigator.push(
+                      context,
+                      SlideRightTransRoute(
+                          builder: (context) => RtspPlayer(
+                                rtspLink: widget.schema[1],
+                              ),
+                          settings: const RouteSettings()));
                   return NavigationActionPolicy.CANCEL;
                 }
 
@@ -87,9 +96,7 @@ class _SmartSystemViewState extends ConsumerState<SmartSystemView> {
                 });
               },
             ),
-            progress < 1.0
-                ? LinearProgressIndicator(value: progress)
-                : Container(),
+            progress < 1.0 ? LinearProgressIndicator(value: progress) : Container(),
           ],
         ),
       )),

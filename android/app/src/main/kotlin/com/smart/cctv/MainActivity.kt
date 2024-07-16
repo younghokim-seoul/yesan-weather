@@ -1,6 +1,7 @@
 package com.smart.cctv
 
 import android.util.Log
+
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -13,14 +14,9 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         GeneratedPluginRegistrant.registerWith(flutterEngine)
-        val url = BuildConfig.SERVER_V1
-        Log.d(this.javaClass.name, "url..." + url)
-        val handler =
-            MethodChannel.MethodCallHandler { methodCall: MethodCall, result: MethodChannel.Result ->
+        val handler = MethodChannel.MethodCallHandler { methodCall: MethodCall, result: MethodChannel.Result ->
                 if (methodCall.method == "getAppUrl") {
-                    val url = BuildConfig.SERVER_V1
-                    Log.d(this.javaClass.name, url)
-                    result.success(BuildConfig.SERVER_V1)
+                    result.success(BuildConfig.SERVER_URL + "," + BuildConfig.SERVER_CCTV)
                 } else {
                     result.notImplemented()
                 }
